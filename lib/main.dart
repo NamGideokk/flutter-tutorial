@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sample/screens/leadingMenu.dart';
+import 'package:get/get.dart';
+import './widgets/BottomNaviBarItem.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -9,8 +12,24 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final TextEditingController textEController = TextEditingController();
+
+  void handleSendingBtn(String text) {
+    if (text.isEmpty || text == '') {
+      print('please input text.');
+    } else {
+      print(text);
+      textEController.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +37,19 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Contact App"),
+          title: Text("APPLE"),
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            color: Colors.black,
+            onPressed: () {
+              print('click leading iconButton');
+            },
+          ),
           titleTextStyle: TextStyle(color: Colors.black),
           // backgroundColor: Colors.white,
           actions: const [
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: EdgeInsets.only(right: 15),
               child: Icon(
                 Icons.add_box_outlined,
               ),
@@ -31,29 +57,36 @@ class MyApp extends StatelessWidget {
           ],
           actionsIconTheme: IconThemeData(color: Colors.black),
         ),
-        body: ListView(),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.black,
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: '홈',
-                activeIcon: Icon(Icons.home_filled)),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.shop),
-                label: '샵',
-                activeIcon: Icon(Icons.shop_2_outlined)),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: '검색',
-                activeIcon: Icon(Icons.search_off),
-                backgroundColor: Colors.red),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: '내정보',
-                activeIcon: Icon(Icons.person_outline)),
-          ],
+        body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: ListView(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: TextField(
+                      controller: textEController,
+                      onSubmitted: handleSendingBtn,
+                      decoration: InputDecoration(hintText: '채팅을 입력하세요.'),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        handleSendingBtn(textEController.text);
+                      },
+                      icon: Icon(Icons.send),
+                      label: Text('전송'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
+        bottomNavigationBar: BottomNaviBarItem(),
       ),
     );
   }
